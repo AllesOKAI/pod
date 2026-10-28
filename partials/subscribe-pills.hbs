@@ -4,8 +4,8 @@
     Slots are fixed for layout stability:
         1. Apple Podcasts        (always — opens via podcast:// URL scheme)
         2. Spotify               (conditional — needs subscribe_spotify_url)
-        3. Overcast              (always — overcast.fm/podcasterinfo)
-        4. Pocket Casts          (always — pktc:// URL scheme)
+        3. Fountain              (always — pinned show URL)
+        4. Hopp                  (always — pinned deep-link)
         5. RSS                   (always — raw feed)
     Plus a "+ N more ways to subscribe →" link pointing to /subscribe/
     with N derived from the always-on list size plus any closed-catalog
@@ -37,17 +37,18 @@
 </a>
 {{/if}}
 
-{{!-- Overcast is iOS-only; the x-callback URL opens the app and subscribes
-    directly. No-op on desktop / Android, like the pktc:// and castro://
-    schemes used elsewhere. --}}
-<a href="overcast://x-callback-url/add?url={{encode @site.url}}%2Fpodcast%2Frss%2F"
+{{!-- Fountain + Hopp: pinned show URLs for this publication. Neither
+    derives cleanly from the feed URL (Fountain keys on the show ID, Hopp
+    takes the full feed URL as a query parameter), so both are hard-coded
+    here — swap them when reusing the theme elsewhere. --}}
+<a href="https://fountain.fm/show/cOTlUC47BR9JLBpYtrku"
     class="pill {{#match surface "!=" "light"}}pill--platform{{/match}}" target="_blank" rel="noopener">
-    <span>Overcast</span><span class="pill__arrow" aria-hidden="true">↗</span>
+    <span>Fountain</span><span class="pill__arrow" aria-hidden="true">↗</span>
 </a>
 
-<a href="pktc://subscribe/{{#foreach (split @site.url separator="://")}}{{#unless @first}}{{this}}{{/unless}}{{/foreach}}/podcast/rss/"
+<a href="https://www.sovereigncast.space/open?feed=https%3A%2F%2Fwww.allesokai.de%2Fpodcast%2Frss%2F"
     class="pill {{#match surface "!=" "light"}}pill--platform{{/match}}" target="_blank" rel="noopener">
-    <span>Pocket Casts</span><span class="pill__arrow" aria-hidden="true">↗</span>
+    <span>Hopp</span><span class="pill__arrow" aria-hidden="true">↗</span>
 </a>
 
 <a href="{{@site.url}}/podcast/rss/"

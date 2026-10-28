@@ -33,6 +33,14 @@
     <li><a href="{{@custom.subscribe_spotify_url}}" class="pill pill--grid" target="_blank" rel="noopener"><span class="pill__dot" style="--dot-color:#1DB954;"></span><span>Spotify</span><span class="pill__arrow" aria-hidden="true">↗</span></a></li>
     {{/if}}
 
+    {{!-- Fountain + Hopp: pinned show URLs for this publication — neither
+        derives cleanly from the feed URL (Fountain keys on the show ID, Hopp
+        takes the full feed URL as a query parameter). Dot colours are the
+        brands' own: fountain.fm green, sovereigncast.space orange. --}}
+    <li><a href="https://fountain.fm/show/cOTlUC47BR9JLBpYtrku" class="pill pill--grid" target="_blank" rel="noopener"><span class="pill__dot" style="--dot-color:#4CC38A;"></span><span>Fountain</span><span class="pill__arrow" aria-hidden="true">↗</span></a></li>
+
+    <li><a href="https://www.sovereigncast.space/open?feed=https%3A%2F%2Fwww.allesokai.de%2Fpodcast%2Frss%2F" class="pill pill--grid" target="_blank" rel="noopener"><span class="pill__dot" style="--dot-color:#F7931A;"></span><span>Hopp</span><span class="pill__arrow" aria-hidden="true">↗</span></a></li>
+
     <li><a href="overcast://x-callback-url/add?url={{encode @site.url}}%2Fpodcast%2Frss%2F" class="pill pill--grid" target="_blank" rel="noopener"><span class="pill__dot" style="--dot-color:#FC7E0F;"></span><span>Overcast</span><span class="pill__arrow" aria-hidden="true">↗</span></a></li>
 
     <li><a href="pktc://subscribe/{{#foreach (split @site.url separator="://")}}{{#unless @first}}{{this}}{{/unless}}{{/foreach}}/podcast/rss/" class="pill pill--grid" target="_blank" rel="noopener"><span class="pill__dot" style="--dot-color:#F43E37;"></span><span>Pocket Casts</span><span class="pill__arrow" aria-hidden="true">↗</span></a></li>
