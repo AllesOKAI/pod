@@ -99,23 +99,37 @@
                     <pubDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}</pubDate>
                     <guid isPermaLink="false">{{id}}</guid>
                     <description><![CDATA[{{custom_excerpt}}]]></description>
-                    {{!-- content:encoded with a strict <p>…</p> whitelist.
+                    {{!-- content:encoded with a strict whitelist of <p>…</p>
+                        and flat <ul>/<ol>…</ul>/<ol> blocks.
 
                         Apple, Spotify, Overcast and Pocket Casts all only render
                         <p>, <a>, <ul>/<ol>/<li> in show notes — everything else
                         degrades to inert HTML or visible junk. Rather than chase
                         every Ghost card type with its own strip pattern (audio,
-                        bookmark, gallery, callout, button, file, …), we emit
-                        ONLY the content of <p> blocks. Inline <a> links inside
-                        paragraphs survive (they're inside the <p> chunk).
+                        bookmark, gallery, callout, button, file, …), we emit ONLY
+                        the content of <p> blocks plus list blocks. Inline <a>
+                        links inside both survive (they're inside the chunk).
 
-                        Trade-off: <ul>/<ol> lists OUTSIDE of paragraphs are
-                        dropped. The dominant show-notes pattern (prose + inline
-                        links) is preserved; richer lists would need an opt-in.
+                        Each chunk between two <p>s carries the paragraph up to
+                        </p> PLUS whatever follows it until the next <p> — which
+                        is exactly where lists live. So every chunk gets three
+                        passes: the <p> pass (first chunk skipped — nothing
+                        before the first paragraph), then a <ul> and an <ol>
+                        pass that wrap everything up to the matching closer.
+                        The list passes deliberately run on EVERY chunk,
+                        including the first, so a document that opens with a
+                        list still emits it.
+
+                        Known trade-offs: (1) nested lists (indented items in
+                        the Ghost editor) come out flattened-but-present —
+                        structure suffers, content doesn't; (2) a <ul> and an
+                        <ol> directly adjacent (no <p> between them) emit in
+                        ul-then-ol order. Flat lists — the dominant show-notes
+                        pattern — render in original document order.
 
                         We use {{html}} (raw post HTML string) instead of {{content}}
                         (a block helper that can't be piped through (split)). --}}
-                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#unless @first}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</p>{{/unless}}{{/foreach}}]]></content:encoded>
+                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#unless @first}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</p>{{/unless}}{{#foreach (split this separator="<ul>")}}{{#unless @first}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</ul>{{/unless}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#unless @first}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</ol>{{/unless}}{{/foreach}}{{/foreach}}]]></content:encoded>
                     <itunes:title><![CDATA[{{title}}]]></itunes:title>
                     <itunes:summary><![CDATA[{{custom_excerpt}}]]></itunes:summary>
                     <itunes:author>{{#primary_author}}{{name}}{{/primary_author}}</itunes:author>
