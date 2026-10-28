@@ -99,37 +99,55 @@
                     <pubDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}</pubDate>
                     <guid isPermaLink="false">{{id}}</guid>
                     <description><![CDATA[{{custom_excerpt}}]]></description>
-                    {{!-- content:encoded with a strict whitelist of <p>…</p>
-                        and flat <ul>/<ol>…</ul>/<ol> blocks.
+                                        {{!-- content:encoded with a strict whitelist: <p>…</p>
+                        blocks plus flat <ul>/<ol> lists, in document order.
 
                         Apple, Spotify, Overcast and Pocket Casts all only render
                         <p>, <a>, <ul>/<ol>/<li> in show notes — everything else
                         degrades to inert HTML or visible junk. Rather than chase
                         every Ghost card type with its own strip pattern (audio,
-                        bookmark, gallery, callout, button, file, …), we emit ONLY
-                        the content of <p> blocks plus list blocks. Inline <a>
-                        links inside both survive (they're inside the chunk).
+                        bookmark, gallery, callout, button, file, …), we emit
+                        ONLY paragraph and list content. Inline <a> links survive
+                        (they're inside the chunk).
 
-                        Each chunk between two <p>s carries the paragraph up to
-                        </p> PLUS whatever follows it until the next <p> — which
-                        is exactly where lists live. So every chunk gets three
-                        passes: the <p> pass (first chunk skipped — nothing
-                        before the first paragraph), then a <ul> and an <ol>
-                        pass that wrap everything up to the matching closer.
-                        The list passes deliberately run on EVERY chunk,
-                        including the first, so a document that opens with a
-                        list still emits it.
+                        Ghost's split helper drops empty results (since 6.7, PR
+                        #25283), so chunk selection cannot rely on a leading
+                        empty split part — each pass instead matches on the
+                        closer being present: a chunk/pair renders as a <p> when
+                        it contains </p>, as a <ul>/<ol> when it contains the
+                        matching closer. This keeps the logic correct on both
+                        sides of the 6.7 behavior change. List passes run on
+                        EVERY chunk, so a document that opens with a list still
+                        emits it.
 
-                        Known trade-offs: (1) nested lists (indented items in
-                        the Ghost editor) come out flattened-but-present —
-                        structure suffers, content doesn't; (2) a <ul> and an
-                        <ol> directly adjacent (no <p> between them) emit in
-                        ul-then-ol order. Flat lists — the dominant show-notes
-                        pattern — render in original document order.
+                        Because list closers can nest, each list pass also has a
+                        recovery loop: content following an inner closer is
+                        re-emitted as flat, properly closed <li> items, so items
+                        AFTER a nested list survive (same for items before the
+                        nest, rebuilt from their <li> parts). Nested lists come
+                        out flattened-but-complete; guard conditions keep the
+                        other list type's content out of each pass.
+
+                        Escape-consciousness inside CDATA: a literal ]]> would
+                        terminate the section and invalidate the whole feed, so
+                        every emission point wraps content in a split-join that
+                        rewrites ]]> to ]]&gt; (same nested split-join pattern the
+                        psc:chapter attributes below use). A terminator sitting
+                        at the very end of a trimmed chunk is dropped by the
+                        empty-filter — the feed stays valid, the three characters
+                        are gone.
+
+                        Known trade-offs: nested lists are flattened (with an
+                        occasional empty <li></li> from a nesting boundary);
+                        mixed-type nesting (ul inside ol) can duplicate content;
+                        a <ul> and an <ol> directly adjacent (no <p> between)
+                        emit in ul-then-ol order; card-internal <p>s still leak
+                        as plain paragraphs. Flat lists — the dominant
+                        show-notes pattern — render in original order.
 
                         We use {{html}} (raw post HTML string) instead of {{content}}
                         (a block helper that can't be piped through (split)). --}}
-                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#unless @first}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</p>{{/unless}}{{#foreach (split this separator="<ul>")}}{{#unless @first}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</ul>{{/unless}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#unless @first}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</ol>{{/unless}}{{/foreach}}{{/foreach}}]]></content:encoded>
+                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ul>{{else}}{{#match this "~" "<ol>"}}{{else}}{{#match this "~" "<li"}}<ul>{{#foreach (split this separator="<li>")}}{{#match this "!=" ""}}{{#match this "~" "</li>"}}<li>{{#foreach (split this separator="</li>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</li>{{else}}<li>{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}</li>{{/match}}{{/match}}{{/foreach}}</ul>{{/match}}{{/match}}{{/match}}{{#foreach (split this separator="</ul>")}}{{#unless @first}}{{#match this "~" "<ol>"}}{{else}}{{#match this "~" "<li"}}<ul>{{#foreach (split this separator="<li>")}}{{#match this "!=" ""}}{{#match this "~" "</li>"}}<li>{{#foreach (split this separator="</li>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</li>{{else}}<li>{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}</li>{{/match}}{{/match}}{{/foreach}}</ul>{{/match}}{{/match}}{{/unless}}{{/foreach}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#match this "~" "</ol>"}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ol>{{else}}{{#match this "~" "<ul>"}}{{else}}{{#match this "~" "<li"}}<ol>{{#foreach (split this separator="<li>")}}{{#match this "!=" ""}}{{#match this "~" "</li>"}}<li>{{#foreach (split this separator="</li>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</li>{{else}}<li>{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}</li>{{/match}}{{/match}}{{/foreach}}</ol>{{/match}}{{/match}}{{/match}}{{#foreach (split this separator="</ol>")}}{{#unless @first}}{{#match this "~" "<ul>"}}{{else}}{{#match this "~" "<li"}}<ol>{{#foreach (split this separator="<li>")}}{{#match this "!=" ""}}{{#match this "~" "</li>"}}<li>{{#foreach (split this separator="</li>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</li>{{else}}<li>{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}</li>{{/match}}{{/match}}{{/foreach}}</ol>{{/match}}{{/match}}{{/unless}}{{/foreach}}{{/foreach}}{{/foreach}}]]></content:encoded>
                     <itunes:title><![CDATA[{{title}}]]></itunes:title>
                     <itunes:summary><![CDATA[{{custom_excerpt}}]]></itunes:summary>
                     <itunes:author>{{#primary_author}}{{name}}{{/primary_author}}</itunes:author>
