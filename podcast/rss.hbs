@@ -28,7 +28,7 @@
         <description><![CDATA[{{@site.description}}]]></description>
         <language>{{@site.locale}}</language>
         <copyright>© {{date format="YYYY"}} {{@site.title}}</copyright>
-        <lastBuildDate>{{date format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}</lastBuildDate>
+        <lastBuildDate>{{date format="ddd, DD MMM YYYY HH:mm:ss ZZ" locale="en"}}</lastBuildDate>
         <atom:link href="{{@site.url}}/podcast/rss/" rel="self" type="application/rss+xml" />
 
         {{!-- Podcasting 2.0 channel-level tags.
@@ -96,7 +96,7 @@
                 <item>
                     <title><![CDATA[{{title}}]]></title>
                     <link>{{url absolute="true"}}</link>
-                    <pubDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ"}}</pubDate>
+                    <pubDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ" locale="en"}}</pubDate>
                     <guid isPermaLink="false">{{id}}</guid>
                     <description><![CDATA[{{custom_excerpt}}]]></description>
                     {{!-- content:encoded with a strict <p>…</p> whitelist.
