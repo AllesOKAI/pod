@@ -1,0 +1,22 @@
+name: QA
+
+# Static checks, a real Ghost site with test content, and browser checks, from
+# github.com/magicpages/theme-qa. Reproduce locally with
+# `npx @magicpages/theme-qa run`.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  qa:
+    uses: magicpages/theme-qa/.github/workflows/theme.yml@main

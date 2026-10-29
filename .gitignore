@@ -28,3 +28,6 @@ dist/
 
 # Scratch file written + removed by scripts/release.mjs
 .release-notes.md
+
+# theme-qa run output
+.theme-qa/
