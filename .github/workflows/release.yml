@@ -1,7 +1,8 @@
 name: Release
 
 # Changesets release flow — on the fork this runs for main (upstream sync)
-# AND master (fork work; see "Branch structure" in AGENTS.md):
+# AND master (fork work; see "Branch structure" in AGENTS.md). It needs a
+# FORK_RELEASE_TOKEN until the org stops forcing read-only tokens:
 #   1. Changes land on main/master; each user-visible change includes a
 #      .changeset/*.md file (see CONTRIBUTING.md).
 #   2. When the branch has at least one changeset, this workflow opens/updates a
@@ -69,8 +70,14 @@ jobs:
           # fail with a 422 (`Validation Failed: … tag_name already_exists`).
           # Disabling the hook keeps the run green.
           createGithubReleases: false
+        # Token fallback: the AllesOKAI org forces read-only GITHUB_TOKENs
+        # (setup workflow permissions at org level + no per-repo override),
+        # so the changesets action cannot push commits, open the Version PR,
+        # tag, or create the Release with the default token. Once
+        # FORK_RELEASE_TOKEN — a PAT of an org admin (see AGENTS.md,
+        # "Releases on the fork") — is added as a repository secret, the
+        # flow runs end to end. Until then the run fails at exactly that
+        # step, which is the honest state of the permissions.
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # `scripts/release.mjs` calls `gh release create`. The `gh` CLI
-          # is preinstalled on ubuntu-latest and reads `GH_TOKEN`.
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.FORK_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.FORK_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}

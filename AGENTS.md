@@ -295,6 +295,22 @@ GitHub Release itself. The admin grabs the `pod-alles-okai.zip` from the Release
 uploads it via **Settings → Design → Change theme → Upload**. On
 `main` this description still matches the upstream flow verbatim.
 
+**Releases on the fork need a token with write access.** The AllesOKAI
+organization enforces read-only `GITHUB_TOKEN`s for Actions and
+disallows per-repo overrides, so `release.yml` cannot push the Version
+PR, the tag, or the Release out of the box. Two unlock paths:
+
+1. **Org admin flips the policy** (Settings → Actions → Workflow
+   permissions → read+write, or per-repo override) → the default token
+   works as designed.
+2. **Repository secret `FORK_RELEASE_TOKEN`**: a classic PAT of an org
+   admin with `repo` scope (or a fine-grained token with Contents +
+   Pull requests write limited to this repo). `release.yml` prefers it
+   over `GITHUB_TOKEN` automatically.
+
+Interim manual releases stay possible locally:
+`GH_TOKEN=$(gh auth token) npm run release` from master.
+
 ## How to work in this codebase
 
 - **Always start by reading.** Before changing a template, read it, its
