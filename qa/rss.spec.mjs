@@ -124,8 +124,10 @@ test('the podcast feed lists every episode with a playable enclosure', async ({
   for (const item of items) {
     expect(item).toMatch(/<enclosure length="40125" url="http[^"]+\.mp3" type="audio\/mpeg"\s*\/>/);
     expect(item).toContain('<itunes:duration>00:00:05</itunes:duration>');
-    expect(item).toMatch(/<itunes:episode>\d+<\/itunes:episode>/);
   }
+  // Each episode's pod:episode marker, not one marker repeated for every item.
+  const numbers = items.map((item) => Number(item.match(/<itunes:episode>(\d+)</)?.[1]));
+  expect(numbers.sort((a, b) => a - b)).toEqual(items.map((_, index) => index + 1));
   expect(xml).toContain('<itunes:author>Theme QA</itunes:author>');
 });
 
