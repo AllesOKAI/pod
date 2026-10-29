@@ -157,7 +157,7 @@
         "type": "text",
         "default": "",
         "group": "homepage",
-        "description": "Apple Podcasts show URL (podcasts.apple.com/…). Empty falls back to the podcast:// URL scheme, which only works on iOS/macOS."
+        "description": "Apple Podcasts show URL. Empty uses the podcast:// link, which only opens on iOS and macOS."
       },
       "subscribe_spotify_url": {
         "type": "text",
