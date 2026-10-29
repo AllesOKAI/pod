@@ -1,9 +1,10 @@
 name: Release
 
-# Changesets release flow:
-#   1. Contributors land PRs on main; each user-visible change includes a
+# Changesets release flow — on the fork this runs for main (upstream sync)
+# AND master (fork work; see "Branch structure" in AGENTS.md):
+#   1. Changes land on main/master; each user-visible change includes a
 #      .changeset/*.md file (see CONTRIBUTING.md).
-#   2. When main has at least one changeset, this workflow opens/updates a
+#   2. When the branch has at least one changeset, this workflow opens/updates a
 #      "Version Packages" PR that bumps package.json + writes the accumulated
 #      changesets into CHANGELOG.md.
 #   3. Merging that PR clears the changeset directory and triggers this same
@@ -17,7 +18,7 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
 
 concurrency:
   group: release-${{ github.ref }}
@@ -58,7 +59,7 @@ jobs:
           # Version PR branch, not on main.
           version: npm run version
           # `scripts/release.mjs` — builds pod.zip, tags, creates the
-          # GitHub Release. Runs on main AFTER the Version PR merges.
+          # GitHub Release. Runs AFTER the Version PR merges.
           publish: npm run release
           commit: 'chore: version'
           title: 'chore: version'

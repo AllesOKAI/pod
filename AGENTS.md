@@ -92,7 +92,6 @@ pod/
 └── .github/workflows/
     ├── ci.yml                # gscan + build + zip on push/PR
     ├── release.yml           # Version PR flow + release on merge
-    ├── deploy.yml            # release.published → deploy to pod.magicpages.co
     └── qa.yml                # theme-qa: Ghost + test content + browser checks
 ```
 
@@ -287,32 +286,13 @@ the publish step.
 `scripts/release.mjs` is idempotent: if the `vX.Y.Z` tag is already on
 `origin`, it exits 0 without re-tagging or re-uploading. Safe to re-run.
 
-**Auto-deploy to the demo.** `.github/workflows/deploy.yml` fires on
-`workflow_run: workflows: [Release], types: [completed]`. It can't use
-`on: release: published` because releases created by `GITHUB_TOKEN`
-(which `scripts/release.mjs` uses via `gh release create`) don't fire
-that event — GitHub's anti-loop rule blocks it. Same rule vetoes
-`on: push: tags: v*`. `workflow_run` is the officially-recommended
-workaround.
-
-Most Release runs are no-ops (a push landed with no accumulated
-changeset, `release.mjs` exits without cutting a tag). The deploy job
-guards on this by reading `package.json`'s version and checking origin
-for the matching `vX.Y.Z` tag — if it doesn't exist, the deploy silently
-skips. If it does, the released tag is checked out, `assets/built/` is
-rebuilt, and `TryGhost/action-deploy-theme@v2` uploads + activates the
-theme on `pod.magicpages.co` via the Ghost Admin API.
-
-The workflow also accepts `workflow_dispatch` for one-off manual
-redeploys — useful if the demo site got its theme swapped out for
-testing, or after a Cloudflare edge issue where the deployed theme is
-right but the delivered assets are stale.
-
-Requires the `POD_GHOST_ADMIN_API_KEY` repository secret: a staff/admin
-API key in `<id>:<hex_secret>` form, minted from a Ghost custom
-integration (`Settings → Integrations → Add custom integration`) on the
-target site. Other publishers who install Pod download `pod.zip` from
-the Releases page manually.
+**No auto-deploy.** Upstream also runs a `deploy.yml` that pushes every
+release straight onto its demo site (`pod.magicpages.co`) via the Ghost
+Admin API. The fork doesn't do that — there is no deployment target,
+no `POD_GHOST_ADMIN_API_KEY`, and no deployment automation beyond the
+GitHub Release itself. The admin grabs the `pod.zip` from the Releases page and
+uploads it via **Settings → Design → Change theme → Upload**. On
+`main` this description still matches the upstream flow verbatim.
 
 ## How to work in this codebase
 
