@@ -3,7 +3,7 @@
   "description": "A Ghost theme by Magic Pages — editorial audio for podcasters.",
   "version": "1.0.5",
   "engines": {
-    "ghost": ">=5.93.0"
+    "ghost": ">=6.0.0"
   },
   "author": {
     "name": "Magic Pages",
