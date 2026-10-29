@@ -83,7 +83,11 @@
   --color-text-dim: #9c998f;
 
   --color-accent: var(--site-accent);
-  --color-accent-eyebrow: var(--color-accent);
+  /* Accent for text: darkened so small labels and links on the light
+    surfaces stay ≥4.5:1 for typical publisher accents (Ghost's default
+    #FF1A75 gives 5.8:1 on --color-bg). */
+  --color-accent-text: color-mix(in srgb, var(--site-accent) 75%, black);
+  --color-accent-eyebrow: var(--color-accent-text);
   --color-accent-50: color-mix(in srgb, var(--color-accent) 8%, white);
   --color-accent-200: color-mix(in srgb, var(--color-accent) 30%, white);
   --color-accent-400: color-mix(in srgb, var(--color-accent) 60%, white);
@@ -126,6 +130,7 @@
   --color-accent-500: color-mix(in srgb, var(--site-accent) 50%, white);
   --color-accent-400: color-mix(in srgb, var(--site-accent) 45%, white);
   --color-accent-200: color-mix(in srgb, var(--site-accent) 25%, white);
+  --color-accent-text: color-mix(in srgb, var(--site-accent) 55%, white);
 }
 
 @layer base {
@@ -314,7 +319,7 @@
     transition: color 120ms ease;
   }
   .pill--grid:hover .pill__arrow {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   .pill__dot {
     @apply inline-block rounded-full flex-shrink-0;
@@ -332,7 +337,7 @@
   .subscribe-more {
     font-family: theme('fontFamily.sans');
     @apply inline-flex items-center text-[13px] font-medium underline-offset-2 transition-colors;
-    color: var(--color-accent-eyebrow, var(--color-accent));
+    color: var(--color-accent-eyebrow, var(--color-accent-text));
     text-decoration: none;
   }
   .subscribe-more:hover {
@@ -367,6 +372,7 @@
     --color-accent-500: color-mix(in srgb, var(--site-accent) 50%, white);
     --color-accent-400: color-mix(in srgb, var(--site-accent) 45%, white);
     --color-accent-200: color-mix(in srgb, var(--site-accent) 25%, white);
+    --color-accent-text: color-mix(in srgb, var(--site-accent) 55%, white);
   }
   .surface-inverse--card {
     background-color: var(--color-inverse-surface);
@@ -389,6 +395,7 @@
     --color-accent-500: color-mix(in srgb, var(--site-accent) 50%, white);
     --color-accent-400: color-mix(in srgb, var(--site-accent) 45%, white);
     --color-accent-200: color-mix(in srgb, var(--site-accent) 25%, white);
+    --color-accent-text: color-mix(in srgb, var(--site-accent) 55%, white);
     background-color: #0a0a0a;
     color: #f5f2ec;
   }
@@ -467,7 +474,7 @@
   /* !important overrides the inline `style="color: …"` on nav anchors. */
   .pod-header a.is-current,
   .pod-footer a.is-current {
-    color: var(--color-accent) !important;
+    color: var(--color-accent-text) !important;
   }
   .pod-header nav a.is-current {
     position: relative;
@@ -618,14 +625,21 @@
     margin-top: 2em;
     margin-bottom: 0.5em;
   }
-  /* Prose text-links only — leave our pill/chip/cover/player anchors alone. */
-  .post-content a:not(.pill):not(.chip):not(.cover-art):not([class*='pod-player']) {
-    color: var(--color-accent);
+  /* Prose text-links only — leave our pill/chip/cover/player anchors, Ghost's
+    card links (bookmark, file, button) and the paywall's links alone. */
+  .post-content
+    a:not(.pill):not(.chip):not(.cover-art):not([class*='pod-player']):not([class*='kg-']):not(
+      .gh-post-upgrade-cta *
+    ) {
+    color: var(--color-accent-text);
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 3px;
   }
-  .post-content a:not(.pill):not(.chip):not(.cover-art):not([class*='pod-player']):hover {
+  .post-content
+    a:not(.pill):not(.chip):not(.cover-art):not([class*='pod-player']):not([class*='kg-']):not(
+      .gh-post-upgrade-cta *
+    ):hover {
     text-decoration-thickness: 2px;
   }
   .post-content blockquote {
@@ -637,7 +651,7 @@
   .post-content code {
     @apply rounded px-[0.3em] py-[0.1em] font-mono text-[0.9em];
     background-color: var(--color-surface-alt);
-    color: var(--color-accent);
+    color: var(--color-accent-text);
   }
   .post-content pre {
     @apply rounded-xl p-5 overflow-x-auto font-mono text-sm;
@@ -647,6 +661,12 @@
   .post-content pre code {
     @apply bg-transparent p-0;
     color: inherit;
+  }
+  /* Wide tables scroll inside the column instead of widening the page. */
+  .post-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
   }
   .post-content img,
   .post-content video,
@@ -662,15 +682,28 @@
     @apply mt-3 text-center font-sans text-sm;
     color: var(--color-text-muted);
   }
-  /* Wide tables scroll inside the column instead of widening the page. */
-  .post-content table {
-    display: block;
-    max-width: 100%;
-    overflow-x: auto;
-  }
   .post-content .kg-bookmark-card {
     @apply rounded-xl border my-8 overflow-hidden;
     border-color: var(--color-border);
+  }
+  /* Ghost's bookmark, file and product cards ship as white boxes with #222
+    text and metadata faded with opacity, which misses 4.5:1. Re-skin them
+    with the theme tokens so they follow the color scheme and stay readable. */
+  .post-content .kg-bookmark-card a.kg-bookmark-container,
+  .post-content .kg-file-card a.kg-file-card-container,
+  .post-content .kg-product-card-container {
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+  .post-content .kg-bookmark-description,
+  .post-content .kg-bookmark-metadata > *:not(img),
+  .post-content .kg-file-card-caption,
+  .post-content .kg-file-card-filesize,
+  .post-content .kg-product-card .kg-product-card-description p,
+  .post-content .kg-product-card .kg-product-card-description ol,
+  .post-content .kg-product-card .kg-product-card-description ul {
+    color: var(--color-text-muted);
+    opacity: 1;
   }
 
   /* Koenig editor card widths (required by Ghost). */
@@ -691,6 +724,17 @@
   .post-content .kg-width-full img {
     width: 100%;
   }
+  /* Next to the episode sidebar the article column isn't centred on the page,
+    so a centred breakout would push past the right edge. Wide and full cards
+    fill the column there instead. */
+  @media (min-width: 1024px) {
+    .post-content--beside-aside .kg-width-wide,
+    .post-content--beside-aside .kg-width-full {
+      left: auto;
+      width: 100%;
+      transform: none;
+    }
+  }
 }
 
 /* Ghost custom fonts: --gh-font-heading / --gh-font-body are injected when
@@ -698,6 +742,8 @@
   apply when they leave it blank. */
 body {
   font-family: var(--gh-font-body, theme('fontFamily.sans'));
+  /* Long unbroken words (URLs, German compounds) wrap instead of widening the page. */
+  overflow-wrap: break-word;
 }
 h1,
 h2,
@@ -723,16 +769,3 @@ h6,
     display: none !important;
   }
 }
-  /* Next to the episode sidebar the article column isn't centred on the page,
-    so a centred breakout would push past the right edge. Wide and full cards
-    fill the column there instead. */
-  @media (min-width: 1024px) {
-    .post-content--beside-aside .kg-width-wide,
-    .post-content--beside-aside .kg-width-full {
-      left: auto;
-      width: 100%;
-      transform: none;
-    }
-  }
-  /* Long unbroken words (URLs, German compounds) wrap instead of widening the page. */
-  overflow-wrap: break-word;

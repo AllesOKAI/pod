@@ -87,10 +87,19 @@ function bindSystemPreference() {
   });
 }
 
+// Code blocks and tables wider than the column scroll sideways; keyboard users
+// need to be able to focus them to scroll (WCAG 2.1.1).
+function focusableScrollers() {
+  document.querySelectorAll('.post-content pre, .post-content table').forEach((el) => {
+    if (el.scrollWidth > el.clientWidth) el.tabIndex = 0;
+  });
+}
+
 function init() {
   bindSchemeToggle();
   bindSystemPreference();
   bindMobileMenu();
+  focusableScrollers();
   applyScheme(document.documentElement.getAttribute('data-color-scheme') || 'light');
 }
 

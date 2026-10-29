@@ -55,7 +55,7 @@
 
                         <script type="application/pod-html" data-pod-html>{{{html}}}</script>
 
-                        <a href="{{url}}" class="target-tap font-sans text-sm font-medium underline self-start" style="color: var(--color-accent);">{{t "Read the full show notes"}} →</a>
+                        <a href="{{url}}" class="target-tap font-sans text-sm font-medium underline self-start" style="color: var(--color-accent-text);">{{t "Read the full show notes"}} →</a>
                     </div>
                 </article>
             </div>
@@ -103,7 +103,7 @@
         {{#if pagination.next}}
             <div class="flex justify-center mt-14">
                 <a href="{{page_url pagination.next}}" class="pill" style="border-color: var(--color-text);">
-                    {{t "Browse more episodes"}} <span class="pill__arrow" style="color: var(--color-accent);">→</span>
+                    {{t "Browse more episodes"}} <span class="pill__arrow" style="color: var(--color-accent-text);">→</span>
                 </a>
             </div>
         {{/if}}
@@ -142,7 +142,7 @@
             <p id="pod-signup-help" class="font-sans text-xs" style="color: var(--color-text-muted);">{{t "No spam. Unsubscribe in one click."}}</p>
             <p id="pod-signup-error" data-members-error role="alert" aria-live="polite"
                 class="font-sans text-xs m-0 min-h-[1em]" style="color: #B00020;"></p>
-            <p class="pod-signup-success font-sans text-xs m-0" role="status" aria-live="polite" style="color: var(--color-accent);">{{t "Check your email to confirm your subscription."}}</p>
+            <p class="pod-signup-success font-sans text-xs m-0" role="status" aria-live="polite" style="color: var(--color-accent-text);">{{t "Check your email to confirm your subscription."}}</p>
         </form>
     </div>
 </section>

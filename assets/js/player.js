@@ -94,6 +94,7 @@ class PodPlayer {
     this.currentEl = root.querySelector('[data-pod-current]');
     this.totalEl = root.querySelector('[data-pod-total]');
     this.speedBtn = root.querySelector('[data-pod-speed]');
+    this.speedValue = root.querySelector('[data-pod-speed-value]');
     this.downloadLink = root.querySelector('[data-pod-download]');
     if (this.downloadLink) this.downloadLink.href = this.src;
 
@@ -238,8 +239,8 @@ class PodPlayer {
     this.speedIndex = (this.speedIndex + 1) % SPEEDS.length;
     const speed = SPEEDS[this.speedIndex];
     this.audio.playbackRate = speed;
-    if (this.speedBtn) {
-      this.speedBtn.textContent = `${speed % 1 === 0 ? speed.toFixed(0) : speed}×`;
+    if (this.speedValue) {
+      this.speedValue.textContent = `${speed % 1 === 0 ? speed.toFixed(0) : speed}×`;
     }
   }
 
