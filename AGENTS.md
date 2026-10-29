@@ -4,7 +4,7 @@ Guidance for AI coding agents (and humans skimming for the rules) working in the
 Pod repository. This is the canonical instruction file.
 
 Pod is an open-source, MIT-licensed Ghost theme for podcasters, released by
-[Magic Pages](https://www.magicpages.co). It turns any Ghost 6 site into a
+[Magic Pages](https://www.magicpages.co). It turns any Ghost 6.5.3+ site into a
 full podcast home: hero episode with a built-in audio player, iTunes-spec +
 Podcasting 2.0 RSS feed at `/podcast/rss/`, a `/subscribe/` landing page that
 deep-links to 16 podcast apps, and localised UI in six languages.
@@ -98,7 +98,7 @@ pod/
 ## The Ghost integration contract
 
 Pod is a **plain Ghost theme** — no admin patches, no server config changes.
-Ghost 6 loads it via **Settings → Design → Change theme → Upload theme**.
+Ghost 6.5.3+ loads it via **Settings → Design → Change theme → Upload theme**.
 
 **Routes** — `routes.yaml` at the repo root is a complete ready-to-upload file:
 Ghost's default routes (root collection + tag/author taxonomies) plus the two

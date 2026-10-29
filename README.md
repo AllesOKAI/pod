@@ -154,7 +154,7 @@ Ghost admin, and use the build commands below from the Pod directory.
 
 **Option B: Ghost via Docker**
 
-Any Ghost 6 container will do. Bind-mount the theme into
+Any Ghost 6.5.3+ container will do. Bind-mount the theme into
 `/var/lib/ghost/content/themes/pod` and activate it in the admin.
 
 ### Build commands
