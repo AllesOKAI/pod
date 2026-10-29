@@ -4,6 +4,8 @@
 // audio card, the internal #podcast tag (which the RSS feed and the episode
 // layout look for) and pod:* markers in code injection.
 
+import { SHOW_NOTES_CASES } from './qa/show-notes.mjs';
+
 const SHOW_NOTES =
   'In this episode we talk about publishing a podcast from your own website, ' +
   'without a separate podcast host.';
@@ -72,6 +74,26 @@ export default {
         },
       });
       url(`/episode-${number}/`, { id: `episode-${number}`, screenshot: number === 2 });
+    }
+
+    // One episode per show-notes case for qa/rss.spec.mjs. Dated before the
+    // shared base content so they stay off the first pages of the site, and
+    // tagged #podcast only, so they appear in the feed but not on a tag page.
+    for (const [index, notes] of SHOW_NOTES_CASES.entries()) {
+      await post({
+        title: notes.title,
+        slug: notes.slug,
+        tags: ['#podcast'],
+        publishedAt: Date.UTC(2024, 0, index + 1, 9, 0, 0),
+        cards: [cards.audio({ ...media.audio, title: notes.title }), ...notes.build(cards)],
+        fields: {
+          codeinjection_foot: markers({
+            audio: media.audio.src,
+            episode: episodes.length + index + 1,
+            duration: '00:00:05',
+          }),
+        },
+      });
     }
   },
 
