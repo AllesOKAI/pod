@@ -141,14 +141,17 @@
                         empty-filter — the feed stays valid, the three characters
                         are gone.
 
-                        Known trade-offs: a <ul> and an <ol> directly adjacent (no
-                        <p> between) emit in ul-then-ol order; card-internal <p>s
-                        still leak as plain paragraphs. Flat lists — the dominant
+                        Known trade-offs: mixed-type nesting (ul containing ol or
+                        the reverse) leaves the inner list to its own pass, so
+                        each item survives exactly once, flattened; a <ul> and
+                        an <ol> directly adjacent (no <p> between) emit in
+                        ul-then-ol order; card-internal <p>s still leak as
+                        plain paragraphs. Flat lists — the dominant
                         show-notes pattern — render in original order.
 
                         We use {{html}} (raw post HTML string) instead of {{content}}
                         (a block helper that can't be piped through (split)). --}}
-                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#match this "~^" "<li>"}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ul>{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#match this "~" "</ol>"}}{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#match this "~^" "<li>"}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ol>{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{/foreach}}]]></content:encoded>
+                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#match this "~" "<ol>"}}{{else}}{{#match this "~^" "<li>"}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ul>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#match this "~" "</ol>"}}{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#match this "~" "<ul>"}}{{else}}{{#match this "~^" "<li>"}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ol>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{/foreach}}]]></content:encoded>
                     <itunes:title><![CDATA[{{title}}]]></itunes:title>
                     <itunes:summary><![CDATA[{{custom_excerpt}}]]></itunes:summary>
                     <itunes:author>{{#primary_author}}{{name}}{{/primary_author}}</itunes:author>
