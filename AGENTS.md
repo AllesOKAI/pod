@@ -92,7 +92,8 @@ pod/
 └── .github/workflows/
     ├── ci.yml                # gscan + build + zip on push/PR
     ├── release.yml           # Version PR flow + release on merge
-    └── deploy.yml            # release.published → deploy to pod.magicpages.co
+    ├── deploy.yml            # release.published → deploy to pod.magicpages.co
+    └── qa.yml                # theme-qa: Ghost + test content + browser checks
 ```
 
 ## The Ghost integration contract
@@ -233,10 +234,22 @@ The theme's advertised surface, most of which is exercised on
   `npm run zip` on every PR + push to main. `pod.zip` is uploaded as a
   workflow artifact so reviewers can grab it without cloning + building
   locally.
+- **theme-qa** ([magicpages/theme-qa](https://github.com/magicpages/theme-qa))
+  runs on every PR + push to main (`.github/workflows/qa.yml`): a real Ghost
+  site seeded with test content (`theme-qa.config.mjs`), then status,
+  console, sideways-scroll, axe, keyboard and Lighthouse checks in light and
+  dark mode. Pod's own checks live in `qa/*.spec.mjs`. Run it locally with
+  `npx @magicpages/theme-qa run` (needs Docker).
+- **Visual changes** on PRs: theme-qa screenshots `main` and the PR on the
+  same site. If anything looks different, "Approve visual changes" waits for
+  a reviewer of the `visual-review` environment; the run summary links the
+  before/after report. No screenshots are committed. Preview locally with
+  `npx @magicpages/theme-qa visual --base main`.
 
 ### What "done" looks like
 
-1. `npm run lint` and `npm run validate` clean.
+1. `npm run lint` and `npm run validate` clean; theme-qa green, visual
+   changes approved.
 2. `npm run build` produces asset output; `npm run zip` produces a valid
    `pod.zip`.
 3. User-visible change → `npm run changeset` describes it. Not every change

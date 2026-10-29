@@ -3,6 +3,9 @@ name: QA
 # Static checks, a real Ghost site with test content, and browser checks, from
 # github.com/magicpages/theme-qa. Reproduce locally with
 # `npx @magicpages/theme-qa run`.
+#
+# On pull requests, visual changes against main wait for approval through the
+# visual-review environment. A new push cancels the wait and asks again.
 
 on:
   push:
@@ -10,8 +13,10 @@ on:
   pull_request:
     branches: [main]
 
+# actions: read lets theme-qa check that visual-review has required reviewers.
 permissions:
   contents: read
+  actions: read
 
 concurrency:
   group: qa-${{ github.ref }}
