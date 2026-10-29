@@ -1,8 +1,8 @@
 name: CI
 
-# Runs on every PR + every push to main. Verifies the theme follows the
-# formatting rules, still passes gscan, builds cleanly, and produces a valid
-# pod.zip. Not a release — that lives in release.yml.
+# Upstream CI: every PR + push to main. Builds, checks, and produces
+# pod-alles-okai.zip as a CI artifact (fork naming). The Release workflow
+# attaches the same zip to actual Releases — this lives in release.yml.
 
 on:
   push:
@@ -23,11 +23,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
           cache: npm
 
       - name: Install
@@ -69,10 +68,10 @@ jobs:
       # Upload as a workflow artifact so a reviewer can grab it off a PR
       # without cloning + building locally. Not the same as the release
       # asset — release.yml attaches its own build to the GitHub Release.
-      - name: Upload pod.zip artifact
-        uses: actions/upload-artifact@v4
+      - name: Upload pod-alles-okai.zip artifact
+        uses: actions/upload-artifact@v7
         with:
-          name: pod-zip
-          path: pod.zip
+          name: pod-alles-okai-zip
+          path: pod-alles-okai.zip
           if-no-files-found: error
           retention-days: 14

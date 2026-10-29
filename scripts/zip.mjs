@@ -1,19 +1,19 @@
 #!/usr/bin/env node
-// Package the theme into a Ghost-ready `pod.zip` at the repo root.
+// Package the theme into a Ghost-ready `pod-alles-okai.zip` at the repo root.
 //
 // The Ghost admin's "Upload theme" flow expects an archive whose files sit
-// inside a single top-level directory named after the theme (`pod/…`). The
-// old `cd .. && zip -r ../pod.zip pod/…` shell one-liner worked only when
-// the theme lived inside a `pod/` subdirectory of its parent — which is
-// true in the theme-development monorepo but false in the standalone
-// `magicpages/pod` release repo. This script stages the release into a
-// scratch directory so it works from either layout.
+// inside a single top-level directory named after the theme
+// (`pod-alles-okai/…`). This script stages the release into a scratch
+// directory so it works from any layout. The wrapper name carries the
+// fork suffix on purpose: after upload the theme lives in its own
+// `pod-alles-okai/` directory in the Ghost admin instead of overwriting
+// (or being overwritten by) upstream's `pod` theme.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 
-const THEME_NAME = 'pod';
+const THEME_NAME = 'pod-alles-okai';
 const REPO_ROOT = path.resolve(new URL('..', import.meta.url).pathname);
 const OUT_ZIP = path.join(REPO_ROOT, `${THEME_NAME}.zip`);
 
@@ -45,7 +45,7 @@ for (const f of fs.readdirSync(REPO_ROOT)) {
   if (f.endsWith('.hbs')) INCLUDES.push(f);
 }
 
-const stage = fs.mkdtempSync(path.join(os.tmpdir(), 'pod-zip-'));
+const stage = fs.mkdtempSync(path.join(os.tmpdir(), 'zip-'));
 const themeDir = path.join(stage, THEME_NAME);
 fs.mkdirSync(themeDir, { recursive: true });
 
