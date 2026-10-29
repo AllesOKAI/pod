@@ -31,10 +31,10 @@
         {{/foreach}}
     </ul>
 {{else}}
-    <ul class="hidden items-center gap-9 list-none p-0 m-0 sm:flex">
+    <ul class="hidden items-center gap-6 list-none p-0 m-0 lg:flex xl:gap-9">
         {{#foreach navigation}}
             <li class="m-0">
-                <a href="{{url}}" class="target-tap font-sans text-sm font-medium no-underline hover:underline {{#if current}}is-current{{/if}}" style="color: var(--color-text-strong);">{{label}}</a>
+                <a href="{{url}}" class="target-tap whitespace-nowrap font-sans text-sm font-medium no-underline hover:underline {{#if current}}is-current{{/if}}" style="color: var(--color-text-strong);">{{label}}</a>
             </li>
         {{/foreach}}
     </ul>

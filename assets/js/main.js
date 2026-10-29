@@ -64,8 +64,8 @@ function bindMobileMenu() {
     }
   });
 
-  // Tailwind sm: breakpoint — close the mobile drawer if we cross it.
-  const mq = window.matchMedia('(min-width: 640px)');
+  // Tailwind lg: breakpoint, where the header nav takes over from the drawer.
+  const mq = window.matchMedia('(min-width: 1024px)');
   mq.addEventListener('change', (e) => {
     if (e.matches) setOpen(false);
   });

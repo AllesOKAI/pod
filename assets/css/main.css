@@ -662,6 +662,12 @@
     @apply mt-3 text-center font-sans text-sm;
     color: var(--color-text-muted);
   }
+  /* Wide tables scroll inside the column instead of widening the page. */
+  .post-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
   .post-content .kg-bookmark-card {
     @apply rounded-xl border my-8 overflow-hidden;
     border-color: var(--color-border);
@@ -717,3 +723,16 @@ h6,
     display: none !important;
   }
 }
+  /* Next to the episode sidebar the article column isn't centred on the page,
+    so a centred breakout would push past the right edge. Wide and full cards
+    fill the column there instead. */
+  @media (min-width: 1024px) {
+    .post-content--beside-aside .kg-width-wide,
+    .post-content--beside-aside .kg-width-full {
+      left: auto;
+      width: 100%;
+      transform: none;
+    }
+  }
+  /* Long unbroken words (URLs, German compounds) wrap instead of widening the page. */
+  overflow-wrap: break-word;

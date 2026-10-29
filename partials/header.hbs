@@ -18,7 +18,7 @@
                 </span>
             {{/if}}
         </a>
-        <nav class="flex items-center gap-6 sm:gap-9" aria-label="Main navigation">
+        <nav class="flex items-center gap-6 xl:gap-9" aria-label="Main navigation">
             {{navigation}}
 
             {{!-- data-ghost-search wires the Cmd/Ctrl+K shortcut + opens Ghost's sodo-search overlay. --}}
@@ -53,7 +53,7 @@
             </a>
 
             <button type="button"
-                class="flex sm:hidden h-9 w-9 items-center justify-center rounded-full transition-colors"
+                class="flex lg:hidden h-9 w-9 items-center justify-center rounded-full transition-colors"
                 style="background-color: var(--color-surface-alt); color: var(--color-text-strong);"
                 data-pod-toggle-menu
                 aria-label="Open menu"
@@ -71,7 +71,7 @@
 
     <div id="pod-mobile-menu"
         data-pod-mobile-menu
-        class="hidden sm:hidden absolute left-0 right-0 top-full border-t"
+        class="hidden lg:hidden absolute left-0 right-0 top-full border-t"
         style="background-color: var(--color-bg); border-color: var(--color-border);">
         <nav class="mx-auto max-w-content px-6 py-6" aria-label="Mobile navigation">
             {{> navigation type="mobile"}}
