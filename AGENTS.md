@@ -15,6 +15,29 @@ Docs surface: the README, CONTRIBUTING, and CHANGELOG at the repo root.
 This is a working, released codebase. The notes below describe what's actually
 here.
 
+## Branch structure
+
+This checkout serves two roles, one per branch:
+
+- **`main`** is the upstream track ([magicpages/pod]). Pull requests back
+  to upstream are opened FROM feature branches INTO `main`. Cut those
+  branches from `main` — *not* from `master` — so they don't drag
+  fork-local changes into an upstream review.
+- **`master`** is the fork's own branch. Its divergence from `main` is
+  kept intentionally small: the Fountain/Hopp subscribe adjustments, and
+  the workflow wiring those ran on (`workflow_dispatch` in CI, the
+  Release workflow firing on `master` with a `FORK_RELEASE_TOKEN`, and
+  the removal of the upstream auto-deploy — the fork has no
+  deployment target). The theme slug stays `pod` so uploads stay
+  interchangeable with upstream releases.
+
+Everything fork-side was rebuilt once (a a theme-rename fork branch with
+a theme rename and its own tooling was archived on the
+`pod-alles-okai-tooling` branch instead of maintaining two setups).
+Upstream's theme-qa pipeline (`.github/workflows/qa.yml` plus
+`qa/*.spec.mjs`) remains the theme's single testing surface; the fork
+does not duplicate it. Fork-side changes don't need a changeset.
+
 ## Setup & build
 
 - **npm.** Install with `npm install`.
