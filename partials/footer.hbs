@@ -31,7 +31,6 @@
                     <ul class="list-none p-0 m-0 space-y-3">
                         <li><a href="podcast://{{#foreach (split @site.url separator="://")}}{{#unless @first}}{{this}}{{/unless}}{{/foreach}}/podcast/rss/" class="target-tap-block font-sans text-sm no-underline hover:underline" style="color: var(--color-inverse-text);" target="_blank" rel="noopener">Apple Podcasts</a></li>
                         {{#if @custom.subscribe_spotify_url}}<li><a href="{{@custom.subscribe_spotify_url}}" class="target-tap-block font-sans text-sm no-underline hover:underline" style="color: var(--color-inverse-text);" target="_blank" rel="noopener">Spotify</a></li>{{/if}}
-                        <li><a href="overcast://x-callback-url/add?url={{encode @site.url}}%2Fpodcast%2Frss%2F" class="target-tap-block font-sans text-sm no-underline hover:underline" style="color: var(--color-inverse-text);" target="_blank" rel="noopener">Overcast</a></li>
                         <li><a href="{{@site.url}}/podcast/rss/" class="target-tap-block font-sans text-sm no-underline hover:underline" style="color: var(--color-inverse-text);">RSS feed</a></li>
                         <li><a href="{{@site.url}}/subscribe/" class="target-tap-block font-sans text-sm no-underline hover:underline" style="color: var(--color-accent-500);">All subscribe options →</a></li>
                     </ul>
