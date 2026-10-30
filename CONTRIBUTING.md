@@ -5,7 +5,7 @@ up the theme locally, the conventions we follow, and how to submit a change.
 
 ## Local development
 
-Pod is a plain Ghost theme. Any Ghost 5.93+ install will do — local via
+Pod is a plain Ghost theme. Any Ghost 6.5.3+ install will do — local via
 [ghost-cli](https://ghost.org/docs/install/local/), a container, or a
 scratch site.
 

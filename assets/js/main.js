@@ -64,8 +64,8 @@ function bindMobileMenu() {
     }
   });
 
-  // Tailwind sm: breakpoint — close the mobile drawer if we cross it.
-  const mq = window.matchMedia('(min-width: 640px)');
+  // Tailwind lg: breakpoint, where the header nav takes over from the drawer.
+  const mq = window.matchMedia('(min-width: 1024px)');
   mq.addEventListener('change', (e) => {
     if (e.matches) setOpen(false);
   });
@@ -87,10 +87,19 @@ function bindSystemPreference() {
   });
 }
 
+// Code blocks and tables wider than the column scroll sideways; keyboard users
+// need to be able to focus them to scroll (WCAG 2.1.1).
+function focusableScrollers() {
+  document.querySelectorAll('.post-content pre, .post-content table').forEach((el) => {
+    if (el.scrollWidth > el.clientWidth) el.tabIndex = 0;
+  });
+}
+
 function init() {
   bindSchemeToggle();
   bindSystemPreference();
   bindMobileMenu();
+  focusableScrollers();
   applyScheme(document.documentElement.getAttribute('data-color-scheme') || 'light');
 }
 

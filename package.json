@@ -3,7 +3,7 @@
   "description": "A Ghost theme by Magic Pages — editorial audio for podcasters.",
   "version": "1.0.5",
   "engines": {
-    "ghost": ">=5.93.0"
+    "ghost": ">=6.5.3"
   },
   "author": {
     "name": "Magic Pages",
@@ -157,7 +157,7 @@
         "type": "text",
         "default": "",
         "group": "homepage",
-        "description": "Apple Podcasts show URL (podcasts.apple.com/…). Empty falls back to the podcast:// URL scheme, which only works on iOS/macOS."
+        "description": "Apple Podcasts show URL. Empty uses the podcast:// link, which only opens on iOS and macOS."
       },
       "subscribe_spotify_url": {
         "type": "text",

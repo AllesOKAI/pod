@@ -4,7 +4,7 @@ Guidance for AI coding agents (and humans skimming for the rules) working in the
 Pod repository. This is the canonical instruction file.
 
 Pod is an open-source, MIT-licensed Ghost theme for podcasters, released by
-[Magic Pages](https://www.magicpages.co). It turns any Ghost 5.93+ site into a
+[Magic Pages](https://www.magicpages.co). It turns any Ghost 6.5.3+ site into a
 full podcast home: hero episode with a built-in audio player, iTunes-spec +
 Podcasting 2.0 RSS feed at `/podcast/rss/`, a `/subscribe/` landing page that
 deep-links to 16 podcast apps, and localised UI in six languages.
@@ -92,13 +92,14 @@ pod/
 └── .github/workflows/
     ├── ci.yml                # gscan + build + zip on push/PR
     ├── release.yml           # Version PR flow + release on merge
-    └── deploy.yml            # release.published → deploy to pod.magicpages.co
+    ├── deploy.yml            # release.published → deploy to pod.magicpages.co
+    └── qa.yml                # theme-qa: Ghost + test content + browser checks
 ```
 
 ## The Ghost integration contract
 
 Pod is a **plain Ghost theme** — no admin patches, no server config changes.
-Ghost 5.93+ loads it via **Settings → Design → Change theme → Upload theme**.
+Ghost 6.5.3+ loads it via **Settings → Design → Change theme → Upload theme**.
 
 **Routes** — `routes.yaml` at the repo root is a complete ready-to-upload file:
 Ghost's default routes (root collection + tag/author taxonomies) plus the two
@@ -233,10 +234,22 @@ The theme's advertised surface, most of which is exercised on
   `npm run zip` on every PR + push to main. `pod.zip` is uploaded as a
   workflow artifact so reviewers can grab it without cloning + building
   locally.
+- **theme-qa** ([magicpages/theme-qa](https://github.com/magicpages/theme-qa))
+  runs on every PR + push to main (`.github/workflows/qa.yml`): a real Ghost
+  site seeded with test content (`theme-qa.config.mjs`), then status,
+  console, sideways-scroll, axe, keyboard and Lighthouse checks in light and
+  dark mode. Pod's own checks live in `qa/*.spec.mjs`. Run it locally with
+  `npx @magicpages/theme-qa run` (needs Docker).
+- **Visual changes** on PRs: theme-qa screenshots `main` and the PR on the
+  same site. If anything looks different, "Approve visual changes" waits for
+  a reviewer of the `visual-review` environment; the run summary links the
+  before/after report. No screenshots are committed. Preview locally with
+  `npx @magicpages/theme-qa visual --base main`.
 
 ### What "done" looks like
 
-1. `npm run lint` and `npm run validate` clean.
+1. `npm run lint` and `npm run validate` clean; theme-qa green, visual
+   changes approved.
 2. `npm run build` produces asset output; `npm run zip` produces a valid
    `pod.zip`.
 3. User-visible change → `npm run changeset` describes it. Not every change

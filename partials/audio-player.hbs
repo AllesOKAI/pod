@@ -31,7 +31,8 @@
     </div>
 
     {{#unless compact}}
-    <button class="pod-player__speed" data-pod-speed type="button" aria-label="Playback speed">1×</button>
+    {{!-- The accessible name starts with the visible "1×" (WCAG 2.5.3, Label in Name). --}}
+    <button class="pod-player__speed" data-pod-speed type="button"><span data-pod-speed-value>1×</span><span class="sr-only"> playback speed</span></button>
     <a class="pod-player__download" data-pod-download href="{{src}}" download="{{download_name}}" aria-label="Download audio">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true">
             <path d="M12 4v12m0 0l-5-5m5 5l5-5M4 20h16"/>
