@@ -99,23 +99,59 @@
                     <pubDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ" locale="en"}}</pubDate>
                     <guid isPermaLink="false">{{id}}</guid>
                     <description><![CDATA[{{custom_excerpt}}]]></description>
-                    {{!-- content:encoded with a strict <p>…</p> whitelist.
+                    {{!-- content:encoded with a strict whitelist: <p>…</p> blocks
+                        plus <ul>/<ol> pairs, in document order.
 
                         Apple, Spotify, Overcast and Pocket Casts all only render
                         <p>, <a>, <ul>/<ol>/<li> in show notes — everything else
                         degrades to inert HTML or visible junk. Rather than chase
                         every Ghost card type with its own strip pattern (audio,
                         bookmark, gallery, callout, button, file, …), we emit
-                        ONLY the content of <p> blocks. Inline <a> links inside
-                        paragraphs survive (they're inside the <p> chunk).
+                        ONLY paragraph and list content. Inline <a> links survive
+                        (they're inside the chunk).
 
-                        Trade-off: <ul>/<ol> lists OUTSIDE of paragraphs are
-                        dropped. The dominant show-notes pattern (prose + inline
-                        links) is preserved; richer lists would need an opt-in.
+                        Ghost's split helper drops empty results (since 6.7, PR
+                        #25283), so chunk selection cannot rely on a leading
+                        empty split part — each pass instead matches on the
+                        closer being present: a chunk renders as a <p> when it
+                        contains </p>, as a <ul>/<ol> when it contains the
+                        matching closer. This keeps the logic correct on both
+                        sides of the 6.7 behavior change. List passes run on
+                        EVERY chunk, so a document that opens with a list still
+                        emits it.
+
+                        Lists are emitted strictly pair-wise: the content after an
+                        opener must contain the matching closer AND start with a
+                        <li>, anything else is dropped (cards, headings, a list
+                        broken up by inner content). This deliberately trades away
+                        nested-list handling — items outside the innermost matched
+                        pair are dropped — because apps render nested lists badly
+                        anyway (transistor.fm/rendering) and every recovery attempt
+                        proved too risky. The payoff: a markdown card with blank
+                        lines between items (Ghost renders <li><p>…</p></li>) comes
+                        out as clean paragraphs again, and card or <link> junk
+                        cannot ride along inside a list wrapper.
+
+                        Escape-consciousness inside CDATA: a literal ]]> would
+                        terminate the section and invalidate the whole feed, so
+                        every emission point wraps content in a split-join that
+                        rewrites ]]> to ]]&gt; (the same nested split-join pattern
+                        the psc:chapter attributes below use). A terminator sitting
+                        at the very end of a trimmed chunk is dropped by the
+                        empty-filter — the feed stays valid, the three characters
+                        are gone.
+
+                        Known trade-offs: mixed-type nesting (ul containing ol or
+                        the reverse) leaves the inner list to its own pass, so
+                        each item survives exactly once, flattened; a <ul> and
+                        an <ol> directly adjacent (no <p> between) emit in
+                        ul-then-ol order; card-internal <p>s still leak as
+                        plain paragraphs. Flat lists — the dominant
+                        show-notes pattern — render in original order.
 
                         We use {{html}} (raw post HTML string) instead of {{content}}
                         (a block helper that can't be piped through (split)). --}}
-                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#unless @first}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{{this}}}{{/if}}{{/foreach}}</p>{{/unless}}{{/foreach}}]]></content:encoded>
+                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#match this "~" "<ol>"}}{{else}}{{#match this "~^" "<li>"}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ul>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#match this "~" "</ol>"}}{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#match this "~" "<ul>"}}{{else}}{{#match this "~^" "<li>"}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ol>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{/foreach}}]]></content:encoded>
                     <itunes:title><![CDATA[{{title}}]]></itunes:title>
                     <itunes:summary><![CDATA[{{custom_excerpt}}]]></itunes:summary>
                     <itunes:author>{{#primary_author}}{{name}}{{/primary_author}}</itunes:author>
