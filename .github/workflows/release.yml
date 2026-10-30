@@ -3,7 +3,7 @@ name: Release
 # Changesets release flow:
 #   1. Contributors land PRs on main; each user-visible change includes a
 #      .changeset/*.md file (see CONTRIBUTING.md).
-#   2. When main has at least one changeset, this workflow opens/updates a
+#   2. When the trigger branch has at least one changeset, this workflow opens/updates a
 #      "Version Packages" PR that bumps package.json + writes the accumulated
 #      changesets into CHANGELOG.md.
 #   3. Merging that PR clears the changeset directory and triggers this same
@@ -17,7 +17,7 @@ name: Release
 
 on:
   push:
-    branches: [main]
+    branches: [main, master]
 
 concurrency:
   group: release-${{ github.ref }}
@@ -68,8 +68,11 @@ jobs:
           # fail with a 422 (`Validation Failed: … tag_name already_exists`).
           # Disabling the hook keeps the run green.
           createGithubReleases: false
+        # Token fallback: the org forces read-only GITHUB_TOKENs for Actions
+        # (no per-repo override), so changesets cannot push the Version PR,
+        # the tag, or the Release without help. Add FORK_RELEASE_TOKEN (see
+        # the "Releases on the fork" section in AGENTS.md) and the flow runs
+        # end to end.
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          # `scripts/release.mjs` calls `gh release create`. The `gh` CLI
-          # is preinstalled on ubuntu-latest and reads `GH_TOKEN`.
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.FORK_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
+          GH_TOKEN: ${{ secrets.FORK_RELEASE_TOKEN || secrets.GITHUB_TOKEN }}
