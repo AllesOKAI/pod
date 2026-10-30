@@ -135,6 +135,10 @@ pod/
   merged.
 - The `<content:encoded>` whitelist is intentional. New Ghost card types
   need to be considered for whether they should degrade to prose in RSS.
+- `qa/show-notes.mjs` holds one test episode per show-notes shape (Lexical
+  lists, markdown lists, nested lists, other cards). theme-qa seeds them into
+  a real Ghost and `qa/rss.spec.mjs` checks what comes out of the feed. When
+  you change the whitelist or find a post that breaks it, add a case there.
 
 ## Submitting a change
 

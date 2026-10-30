@@ -123,7 +123,12 @@
                         Lists are emitted strictly pair-wise: the content after an
                         opener must contain the matching closer AND start with a
                         <li>, anything else is dropped (cards, headings, a list
-                        broken up by inner content). This deliberately trades away
+                        broken up by inner content). The markdown card writes a
+                        line break after the opener (<ul>⏎<li>), so a line break
+                        followed by <li> counts too. Handlebars has no "\n" escape,
+                        so that string literal holds a real line break, and the two
+                        startsWith checks are or-ed through "!=" because they can't
+                        both be true. This deliberately trades away
                         nested-list handling — items outside the innermost matched
                         pair are dropped — because apps render nested lists badly
                         anyway (transistor.fm/rendering) and every recovery attempt
@@ -151,7 +156,9 @@
 
                         We use {{html}} (raw post HTML string) instead of {{content}}
                         (a block helper that can't be piped through (split)). --}}
-                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#match this "~" "<ol>"}}{{else}}{{#match this "~^" "<li>"}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ul>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#match this "~" "</ol>"}}{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#match this "~" "<ul>"}}{{else}}{{#match this "~^" "<li>"}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ol>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{/foreach}}]]></content:encoded>
+                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#match this "~" "<ol>"}}{{else}}{{#match (match this "~^" "<li>") "!=" (match this "~^" "
+<li>")}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ul>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#match this "~" "</ol>"}}{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#match this "~" "<ul>"}}{{else}}{{#match (match this "~^" "<li>") "!=" (match this "~^" "
+<li>")}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ol>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{/foreach}}]]></content:encoded>
                     <itunes:title><![CDATA[{{title}}]]></itunes:title>
                     <itunes:summary><![CDATA[{{custom_excerpt}}]]></itunes:summary>
                     <itunes:author>{{#primary_author}}{{name}}{{/primary_author}}</itunes:author>
