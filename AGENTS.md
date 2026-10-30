@@ -23,17 +23,17 @@ This checkout serves two roles, one per branch:
   to upstream are opened FROM feature branches INTO `main`. Cut those
   branches from `main` — *not* from `master` — so they don't drag
   fork-local changes into an upstream review.
-- **`master`** is the fork's own branch. Its divergence from `main` is
-  kept intentionally small: the Fountain/Hopp subscribe adjustments, and
-  the workflow wiring those ran on (`workflow_dispatch` in CI, the
-  Release workflow firing on `master` with a `FORK_RELEASE_TOKEN`, and
-  the removal of the upstream auto-deploy — the fork has no
-  deployment target). The theme slug stays `pod` so uploads stay
-  interchangeable with upstream releases.
+- **`master`** is the fork's own branch AND the fork's release line.
+  Its divergence from `main` is kept small: the Fountain/Hopp subscribe
+  adjustments, the pod-alles-okai theme identity (package name, zip
+  name and Ghost-admin wrapper directory), and the workflow wiring
+  (`workflow_dispatch` in CI, the Release workflow firing on `master`
+  with a `FORK_RELEASE_TOKEN`, and the removal of the upstream
+  auto-deploy — the fork has no deployment target). Releases get cut
+  from `master` with the changesets flow; the zip carries the
+  pod-alles-okai wrapper so uploads land as their own theme in the
+  Ghost admin, next to upstream's `pod`.
 
-Everything fork-side was rebuilt once (a a theme-rename fork branch with
-a theme rename and its own tooling was archived on the
-`pod-alles-okai-tooling` branch instead of maintaining two setups).
 Upstream's theme-qa pipeline (`.github/workflows/qa.yml` plus
 `qa/*.spec.mjs`) remains the theme's single testing surface; the fork
 does not duplicate it. Fork-side changes don't need a changeset.
@@ -50,11 +50,11 @@ does not duplicate it. Fork-side changes don't need a changeset.
   editorconfig-checker on every tracked file, plus `prettier --check` for
   CSS/JS/JSON/YAML. CI runs it on every PR.
 - `npm run format` — Prettier `--write` for CSS/JS/JSON/YAML.
-- `npm run zip` — package a Ghost-ready `pod.zip` at the repo root (`scripts/zip.mjs`).
+- `npm run zip` — package a Ghost-ready `pod-alles-okai.zip` at the repo root (`scripts/zip.mjs`).
 - `npm run changeset` — add a changeset for the current work.
 - `npm run version` — bump `package.json` + regenerate `CHANGELOG.md` from
   accumulated changesets. Only ever run by CI on the Version PR branch.
-- `npm run release` — build + tag + create the GitHub Release with `pod.zip`
+- `npm run release` — build + tag + create the GitHub Release with `pod-alles-okai.zip`
   attached (`scripts/release.mjs`). Only ever run by CI when the Version PR
   merges.
 
@@ -109,8 +109,8 @@ pod/
 ├── screenshot-{desktop,mobile}.png  # Marketplace + README hero screenshots
 ├── docs/                     # README-only supplementary screenshots
 ├── scripts/
-│   ├── zip.mjs               # Repo-root → pod.zip staging + package
-│   └── release.mjs           # Tag + GitHub Release + pod.zip attach
+│   ├── zip.mjs               # Repo-root → pod-alles-okai.zip staging
+│   └── release.mjs           # Tag + GitHub Release + fork zip attach
 ├── .changeset/               # Changeset markdown files + config
 └── .github/workflows/
     ├── ci.yml                # gscan + build + zip on push/PR
@@ -134,7 +134,7 @@ instead. Missing routes → RSS feed returns 404 and the subscribe page falls
 back to a 404. Both routes are optional; the theme still works without them,
 just without those two surfaces. The release workflow attaches `routes.yaml`
 as a separate GitHub Release asset so publishers can grab it without
-unpacking `pod.zip`.
+unpacking the theme zip.
 
 **Custom theme settings** live in `package.json` under `config.custom`. Ghost's
 limit is 20 settings; Pod is at 20. Any new setting requires cutting an existing
@@ -242,8 +242,9 @@ The theme's advertised surface, most of which is exercised on
 
 - **`npm run validate`** (gscan): must report `✓ Your theme is compatible
   with Ghost 6.x`, zero errors, zero warnings.
-- **`npm run zip`** must produce a valid `pod.zip` at the repo root — the
-  archive contents live under a `pod/` wrapper (Ghost admin requires it),
+- **`npm run zip`** must produce a valid `pod-alles-okai.zip` at the repo root — the
+  archive contents live under a `pod-alles-okai/` wrapper (Ghost admin
+  requires it),
   no `.changeset` / `.github` / `node_modules` / `scripts` leaks.
 - **RSS feed** — any change to `podcast/rss.hbs` must be validated by
   [Cast Feed Validator](https://castfeedvalidator.com/) and the [Podcast
@@ -254,7 +255,7 @@ The theme's advertised surface, most of which is exercised on
   theme is currently activated on), in both light and dark modes, at desktop
   and mobile viewports. Screenshots go in the PR when a visual change lands.
 - **CI runs** `npm run lint`, `npm run validate`, `npm run build`,
-  `npm run zip` on every PR + push to main. `pod.zip` is uploaded as a
+  `npm run zip` on every PR + push to main. `pod-alles-okai.zip` is uploaded as a
   workflow artifact so reviewers can grab it without cloning + building
   locally.
 - **theme-qa** ([magicpages/theme-qa](https://github.com/magicpages/theme-qa))
@@ -274,7 +275,7 @@ The theme's advertised surface, most of which is exercised on
 1. `npm run lint` and `npm run validate` clean; theme-qa green, visual
    changes approved.
 2. `npm run build` produces asset output; `npm run zip` produces a valid
-   `pod.zip`.
+   the theme zip.
 3. User-visible change → `npm run changeset` describes it. Not every change
    needs one: docs edits, CI-only tweaks, and internal refactors that don't
    affect published output can go in without.
@@ -298,9 +299,11 @@ release workflow does it:
 1. PR lands on `main` with a `.changeset/*.md`.
 2. `changesets/action@v1` opens a **Version Packages** PR that bumps
    `package.json` + rewrites `CHANGELOG.md` from the accumulated changesets.
-3. Merging that PR triggers `scripts/release.mjs`: builds `pod.zip`, tags
-   `vX.Y.Z`, creates the GitHub Release with `pod.zip` attached.
-4. Ghost admins download `pod.zip` from the Releases page for **Settings →
+3. Merging that Version PR triggers `scripts/release.mjs`: builds
+   `pod-alles-okai.zip`, tags `vX.Y.Z`, creates the GitHub Release with
+   the zip attached. Upstream describes this against `pod.zip`; the fork
+   release uses the pod-alles-okai identity throughout.
+4. Ghost admins download `pod-alles-okai.zip` from the Releases page for **Settings →
    Design → Change theme → Upload**.
 
 Not every push cuts a release — only merges that arrive with no accumulated

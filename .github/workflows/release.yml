@@ -9,9 +9,9 @@ name: Release
 #   3. Merging that PR clears the changeset directory and triggers this same
 #      workflow again — this time with no changesets, so `changesets/action`
 #      runs our `publish` script (`scripts/release.mjs`), which:
-#        - builds pod.zip
+#        - builds pod-alles-okai.zip
 #        - creates the vX.Y.Z tag
-#        - creates the GitHub Release with pod.zip attached
+#        - creates the GitHub Release with pod-alles-okai.zip attached
 #      Ghost admin's "Upload theme" flow needs a downloadable zip on the
 #      release page — that's the whole reason this workflow exists.
 
@@ -57,13 +57,13 @@ jobs:
           # from the accumulated .changeset/*.md files. Runs INSIDE the
           # Version PR branch, not on main.
           version: npm run version
-          # `scripts/release.mjs` — builds pod.zip, tags, creates the
+          # `scripts/release.mjs` — builds pod-alles-okai.zip, tags, creates the
           # GitHub Release. Runs on main AFTER the Version PR merges.
           publish: npm run release
           commit: 'chore: version'
           title: 'chore: version'
           # `scripts/release.mjs` already runs `gh release create` with
-          # pod.zip attached, and the action's post-publish hook would
+          # pod-alles-okai.zip attached, and the action's post-publish hook would
           # otherwise try to create a second Release for the same tag and
           # fail with a 422 (`Validation Failed: … tag_name already_exists`).
           # Disabling the hook keeps the run green.

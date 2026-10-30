@@ -6,7 +6,7 @@
 // carries the new version and CHANGELOG.md has the freshly-written entry.
 // Our job:
 //
-//   1. Build pod.zip.
+//   1. Build pod-alles-okai.zip.
 //   2. Skip the whole flow if the vX.Y.Z tag is already on the remote —
 //      idempotent for CI re-runs.
 //   3. Tag the commit as vX.Y.Z (kept the `v` prefix rather than the
@@ -70,11 +70,13 @@ fs.writeFileSync(notesFile, notes);
 sh(`git tag -a ${tag} -m "Release ${tag}"`);
 sh(`git push origin ${tag}`);
 
-// (5) GitHub Release with pod.zip + routes.yaml attached. Two assets on
+// (5) GitHub Release with pod-alles-okai.zip + routes.yaml attached. Two assets on
 // purpose: publishers who want to try Pod without unpacking a zip can
 // grab routes.yaml directly from the release page and upload it to
 // Ghost's Labs UI in one click.
-sh(`gh release create ${tag} pod.zip routes.yaml --title "Pod ${tag}" --notes-file "${notesFile}"`);
+sh(
+  `gh release create ${tag} pod-alles-okai.zip routes.yaml --title "pod-alles-okai ${tag}" --notes-file "${notesFile}"`,
+);
 
 fs.rmSync(notesFile, { force: true });
 

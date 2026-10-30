@@ -2,7 +2,7 @@ name: CI
 
 # Runs on every PR + every push to main. Verifies the theme follows the
 # formatting rules, still passes gscan, builds cleanly, and produces a valid
-# pod.zip. Not a release — that lives in release.yml.
+# pod-alles-okai.zip. Not a release — that lives in release.yml.
 
 on:
   push:
@@ -70,10 +70,10 @@ jobs:
       # Upload as a workflow artifact so a reviewer can grab it off a PR
       # without cloning + building locally. Not the same as the release
       # asset — release.yml attaches its own build to the GitHub Release.
-      - name: Upload pod.zip artifact
+      - name: Upload pod-alles-okai.zip artifact
         uses: actions/upload-artifact@v4
         with:
-          name: pod-zip
-          path: pod.zip
+          name: pod-alles-okai-zip
+          path: pod-alles-okai.zip
           if-no-files-found: error
           retention-days: 14

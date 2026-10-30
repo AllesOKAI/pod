@@ -1,8 +1,10 @@
 #!/usr/bin/env node
-// Package the theme into a Ghost-ready `pod.zip` at the repo root.
+// Package the theme into a Ghost-ready `pod-alles-okai.zip` at the repo root.
 //
 // The Ghost admin's "Upload theme" flow expects an archive whose files sit
-// inside a single top-level directory named after the theme (`pod/…`). The
+// inside a single top-level directory named after the theme
+// (`pod-alles-okai/…`). The fork's wrapper name keeps the theme distinct
+// from upstream's `pod` after upload, in the same Ghost admin. The
 // old `cd .. && zip -r ../pod.zip pod/…` shell one-liner worked only when
 // the theme lived inside a `pod/` subdirectory of its parent — which is
 // true in the theme-development monorepo but false in the standalone
@@ -13,7 +15,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { execSync } from 'node:child_process';
 
-const THEME_NAME = 'pod';
+const THEME_NAME = 'pod-alles-okai';
 const REPO_ROOT = path.resolve(new URL('..', import.meta.url).pathname);
 const OUT_ZIP = path.join(REPO_ROOT, `${THEME_NAME}.zip`);
 
