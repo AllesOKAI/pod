@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.1.0
+
+### Minor Changes
+
+- e57b76c: Pod now declares Ghost 6.5.3 as its minimum version. The podcast feed, footer and subscribe links use Ghost's `{{split}}` helper, and Ghost only accepts themes that use it from 6.5.3 on. Older versions reject the theme upload, so `engines.ghost` said `>=5.93.0` without it being true.
+
+### Patch Changes
+
+- 7c1addb: Fixed the podcast RSS feed emitting localized dates on non-English sites. Ghost's `date` helper defaults to the site locale, so German sites rendered `<pubDate>` as "Mo., 26 Okt. 2026 …" instead of the RFC 822 form "Mon, 26 Oct 2026 …", which breaks feed validation and podcatcher parsing. `lastBuildDate` and `pubDate` now pin `locale="en"` so the feed always emits RFC 822-compliant dates regardless of the site's language.
+- 25c55bb: Pages no longer scroll sideways. The header menu now switches to the drawer below 1024px instead of 640px, so a full menu no longer pushes past the edge on tablets, and menu labels stay on one line. Long unbroken words in titles wrap, and wide tables scroll inside the column. Wide and full-width cards in episodes fill the article column next to the sidebar instead of sticking out past the right edge.
+- 194b9fe: Accessibility fixes. Text in the accent colour (eyebrow labels, tag names, the current menu item, links and inline code) uses a darker shade of the accent in light mode, so it stays readable against the light background. Bookmark, file and product cards follow the color scheme instead of staying white in dark mode, and their faded metadata is readable. The paywall's sign-in link keeps Ghost's colours. The player's speed button announces its visible value ("1× playback speed"), and code blocks and tables that scroll sideways can be focused with the keyboard.
+- 8dbb81d: Fixed the podcast RSS feed dropping show notes. The `content:encoded` whitelist only emitted `<p>` blocks and relied on `{{#unless @first}}` after a `split` — which Ghost 6.7 (empty-result filter in the split helper) turned into a first-paragraph drop, and which cut `<ul>`/`<ol>` list content entirely. Passes now select chunks by closer-matching and emit matched `<ul>…</ul>` / `<ol>…</ol>` pairs in document order, including a document that opens with a list. Every emission point rewrites `]]>` to `]]&gt;` so a literal terminator can't invalidate the feed's CDATA sections. Nested-list content outside the innermost matched pair is dropped (apps render nested lists badly anyway); mixed-type nesting lets the inner list's own pass emit its items exactly once; markdown cards with blank lines between items keep coming out as clean paragraphs.
+- 0a2be04: The podcast RSS feed keeps lists written in a markdown card. Ghost puts a line break between the markdown card's `<ul>`/`<ol>` and its first `<li>`, so the feed dropped those lists from the show notes.
+
 ## 1.0.5
 
 ### Patch Changes

@@ -1,7 +1,7 @@
 {
   "name": "pod",
   "description": "A Ghost theme by Magic Pages — editorial audio for podcasters.",
-  "version": "1.0.5",
+  "version": "1.1.0",
   "engines": {
     "ghost": ">=6.5.3"
   },
