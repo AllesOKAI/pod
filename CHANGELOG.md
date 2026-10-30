@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.1
+
+### Patch Changes
+
+- Replaced Overcast and Pocket Casts with Fountain and Hopp on the homepage subscribe band, added Fountain and Hopp pills above Overcast and Pocket Casts on the /subscribe/ page, and dropped the footer's Overcast line.
+
+  Fork-side change, not for an upstream PR.
+
+- Runs the fork as its own theme: the package name, the packaged zip and its single top-level directory (`pod-alles-okai/…`), the CI artifact, and the release title carry the fork name so Upload lands as a separate theme in the Ghost admin, next to upstream's `pod`.
+
+  Fork-side change, not for an upstream PR.
+
 ## 1.1.0
 
 ### Minor Changes

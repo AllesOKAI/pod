@@ -1,7 +1,7 @@
 {
   "name": "pod-alles-okai",
-  "description": "A Ghost theme by Magic Pages \u2014 editorial audio for podcasters.",
-  "version": "1.1.0",
+  "description": "A Ghost theme by Magic Pages — editorial audio for podcasters.",
+  "version": "1.1.1",
   "engines": {
     "ghost": ">=6.5.3"
   },
@@ -151,7 +151,7 @@
         "type": "text",
         "default": "",
         "group": "homepage",
-        "description": "Lightning node pubkey (starts with 02\u2026 or 03\u2026). Required for <podcast:value>."
+        "description": "Lightning node pubkey (starts with 02… or 03…). Required for <podcast:value>."
       },
       "subscribe_apple_url": {
         "type": "text",
