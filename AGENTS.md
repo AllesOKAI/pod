@@ -15,6 +15,23 @@ Docs surface: the README, CONTRIBUTING, and CHANGELOG at the repo root.
 This is a working, released codebase. The notes below describe what's actually
 here.
 
+## Branch structure
+
+This checkout serves two roles, one per branch:
+
+- **`main`** is the upstream track ([magicpages/pod]). Pull requests back
+  to upstream are opened FROM feature branches INTO `main`. Cut those
+  branches from `main` — *not* from `master` — so they don't drag
+  fork-local infrastructure into an upstream review.
+- **`master`** is the fork's own branch. It may diverge from `main` and
+  carries fork-local tooling without an upstream review round: the
+  `pod-alles-okai` theme slug, its release pipeline, and the Subscribe
+  feature. Stay in sync by rebasing onto `main` instead of
+  maintaining anything in parallel — upstream's theme-qa pipeline
+  (`.github/workflows/qa.yml` plus `qa/*.spec.mjs`, including the
+  show-notes checks added with PR #16) is the single source of testing
+  for this theme; the fork does not duplicate it.
+
 ## Setup & build
 
 - **npm.** Install with `npm install`.
@@ -219,7 +236,8 @@ The theme's advertised surface, most of which is exercised on
 - **`npm run validate`** (gscan): must report `✓ Your theme is compatible
   with Ghost 6.x`, zero errors, zero warnings.
 - **`npm run zip`** must produce a valid `pod-alles-okai.zip` at the repo root — the
-  archive contents live under a `pod/` wrapper (Ghost admin requires it),
+  archive contents live under a `pod-alles-okai/` wrapper (Ghost admin
+  requires it),
   no `.changeset` / `.github` / `node_modules` / `scripts` leaks.
 - **RSS feed** — any change to `podcast/rss.hbs` must be validated by
   [Cast Feed Validator](https://castfeedvalidator.com/) and the [Podcast
