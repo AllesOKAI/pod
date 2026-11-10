@@ -99,8 +99,12 @@
                     <pubDate>{{date published_at format="ddd, DD MMM YYYY HH:mm:ss ZZ" locale="en"}}</pubDate>
                     <guid isPermaLink="false">{{id}}</guid>
                     <description><![CDATA[{{custom_excerpt}}]]></description>
-                    {{!-- content:encoded with a strict whitelist: <p>…</p> blocks
-                        plus <ul>/<ol> pairs, in document order.
+                    {{!-- content:encoded with the custom excerpt in front, then a
+                        strict whitelist of <p>…</p> blocks plus <ul>/<ol> pairs,
+                        in document order. The excerpt leads so clients that only
+                        render content:encoded still show the intro text (they
+                        never read <description>). It emits as its own <p> with
+                        the same CDATA-terminator escaping as the body.
 
                         Apple, Spotify, Overcast and Pocket Casts all only render
                         <p>, <a>, <ul>/<ol>/<li> in show notes — everything else
@@ -156,7 +160,10 @@
 
                         We use {{html}} (raw post HTML string) instead of {{content}}
                         (a block helper that can't be piped through (split)). --}}
-                    <content:encoded><![CDATA[{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#match this "~" "<ol>"}}{{else}}{{#match (match this "~^" "<li>") "!=" (match this "~^" "
+                    {{!-- The custom excerpt rides in front so the intro text
+                        shows for clients that only render content:encoded.
+                        Emits only when the post has one. --}}
+                    <content:encoded><![CDATA[{{#if custom_excerpt}}<p>{{#foreach (split custom_excerpt separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}</p>{{/if}}{{#foreach (split html separator="<p>")}}{{#match this "~" "</p>"}}<p>{{#foreach (split this separator="</p>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</p>{{/match}}{{#foreach (split this separator="<ul>")}}{{#match this "~" "</ul>"}}{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#match this "~" "<ol>"}}{{else}}{{#match (match this "~^" "<li>") "!=" (match this "~^" "
 <li>")}}<ul>{{#foreach (split this separator="</ul>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ul>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{#foreach (split this separator="<ol>")}}{{#match this "~" "</ol>"}}{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#match this "~" "<ul>"}}{{else}}{{#match (match this "~^" "<li>") "!=" (match this "~^" "
 <li>")}}<ol>{{#foreach (split this separator="</ol>")}}{{#if @first}}{{#foreach (split this separator="]]>")}}{{{this}}}{{#unless @last}}]]&gt;{{/unless}}{{/foreach}}{{/if}}{{/foreach}}</ol>{{/match}}{{/match}}{{/if}}{{/foreach}}{{/match}}{{/foreach}}{{/foreach}}]]></content:encoded>
                     <itunes:title><![CDATA[{{title}}]]></itunes:title>
