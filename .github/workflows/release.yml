@@ -35,15 +35,15 @@ jobs:
       contents: write # tag, push, create the GitHub Release
       pull-requests: write # open + update the Version PR
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           # changesets/action needs full history to detect what changed
           # between releases and to push its Version PR commits.
           fetch-depth: 0
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
           cache: npm
 
       - name: Install
